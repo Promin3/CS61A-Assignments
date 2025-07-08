@@ -39,7 +39,12 @@ class Account:
     def time_to_retire(self, amount):
         """Return the number of years until balance would grow to amount."""
         assert self.balance > 0 and amount > 0 and self.interest > 0
-        "*** YOUR CODE HERE ***"
+        future = self.balance
+        years = 0
+        while future < amount:
+            future += self.interest * future
+            years += 1
+        return years
 
 
 class FreeChecking(Account):
@@ -67,9 +72,19 @@ class FreeChecking(Account):
     'Insufficient funds'
     """
     withdraw_fee = 1
-    free_withdrawals = 2
+    free_withdrawal_times = 2
 
-    "*** YOUR CODE HERE ***"
+    def __init__(self, account_holder):
+        super().__init__(account_holder)
+        self.withdrawals_times = 0
+
+    def withdraw(self, amount):
+        self.withdrawals_times += 1
+        if self.withdrawals_times > self.free_withdrawal_times:
+            return super().withdraw(amount + self.withdraw_fee)
+        else:
+            return super().withdraw(amount)
+        
 
 
 def without(s, i):
@@ -85,7 +100,12 @@ def without(s, i):
     >>> without(s, 4) is not s  # Make sure a copy is created
     True
     """
-    "*** YOUR CODE HERE ***"
+    if s is Link.empty:
+        return s
+    if i == 0:
+        return s.rest
+    else:
+        return Link(s.first, without(s.rest, i-1))
 
 
 def duplicate_link(s, val):
@@ -104,7 +124,15 @@ def duplicate_link(s, val):
     >>> z
     Link(1, Link(2, Link(2, Link(2, Link(2, Link(3))))))
     """
-    "*** YOUR CODE HERE ***"
+    if s is Link.empty:
+        return
+    elif s.first == val:
+        remaining = s.rest
+        s.rest = Link(val, remaining)
+        duplicate_link(s.rest.rest, val)
+    else:
+        duplicate_link(s.rest, val)
+
 
 
 class Link:

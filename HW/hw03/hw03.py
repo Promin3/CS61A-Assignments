@@ -24,7 +24,10 @@ def num_eights(n):
     ...       ['Assign', 'AnnAssign', 'AugAssign', 'NamedExpr', 'For', 'While'])
     True
     """
-    "*** YOUR CODE HERE ***"
+    if n < 10:
+        return 1 if n == 8 else 0
+    else:
+        return (1 if n % 10 == 8 else 0) + num_eights(n // 10)
 
 
 def digit_distance(n):
@@ -46,8 +49,11 @@ def digit_distance(n):
     ...       ['For', 'While'])
     True
     """
-    "*** YOUR CODE HERE ***"
-
+    if n // 10 == 0:
+        return 0
+    else:
+        return abs(n % 10 - n // 10 % 10) + digit_distance(n//10) 
+    
 
 def interleaved_sum(n, odd_func, even_func):
     """Compute the sum odd_func(1) + even_func(2) + odd_func(3) + ..., up
@@ -70,8 +76,11 @@ def interleaved_sum(n, odd_func, even_func):
     >>> check(HW_SOURCE_FILE, 'interleaved_sum', ['BitAnd', 'BitOr', 'BitXor']) # ban bitwise operators, don't worry about these if you don't know what they are
     True
     """
-    "*** YOUR CODE HERE ***"
-
+    def helper(i, func1, func2):
+        if i > n:
+            return 0
+        return func1(i) + helper(i + 1, func2, func1)
+    return helper(1, odd_func, even_func)
 
 def next_smaller_dollar(bill):
     """Returns the next smaller bill in order."""
@@ -106,7 +115,17 @@ def count_dollars(total):
     >>> check(HW_SOURCE_FILE, 'count_dollars', ['While', 'For'])
     True
     """
-    "*** YOUR CODE HERE ***"
+    def constrained_count(total, largest_bill):
+        if total == 0:
+            return 1
+        if total < 0:
+            return 0
+        if largest_bill == None:
+            return 0
+        without_bill = constrained_count(total, next_smaller_dollar(largest_bill))
+        with_bill = constrained_count(total - largest_bill, largest_bill)
+        return without_bill + with_bill
+    return constrained_count(total, 100)
 
 
 def next_larger_dollar(bill):
@@ -142,8 +161,17 @@ def count_dollars_upward(total):
     >>> check(HW_SOURCE_FILE, 'count_dollars_upward', ['While', 'For'])
     True
     """
-    "*** YOUR CODE HERE ***"
-
+    def constrained_count(total, smallest_bill):
+        if total == 0:
+            return 1
+        if total < 0:
+            return 0
+        if smallest_bill == None:
+            return 0
+        without_dollar_bill = constrained_count(total, next_larger_dollar(smallest_bill))
+        with_dollar_bill = constrained_count(total - smallest_bill, smallest_bill)
+        return without_dollar_bill + with_dollar_bill
+    return constrained_count(total, 1)
 
 def print_move(origin, destination):
     """Print instructions to move a disk."""
@@ -177,7 +205,13 @@ def move_stack(n, start, end):
     Move the top disk from rod 1 to rod 3
     """
     assert 1 <= start <= 3 and 1 <= end <= 3 and start != end, "Bad start/end"
-    "*** YOUR CODE HERE ***"
+    if n == 1:
+        print_move(start, end)
+    else:
+        other = 6 - start - end
+        move_stack(n-1, start, other)
+        print_move(start, end)
+        move_stack(n-1, other, end)
 
 
 from operator import sub, mul
